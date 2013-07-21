@@ -153,7 +153,7 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
                 staticDomContainers: [],
                 //the css classfier for worker's dom
                 params: null
-            },
+            }
         };
         self._init();
         //调用父类构造函数
@@ -163,7 +163,7 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
     ProtoMethod = {
         _init: function() {
             var self = this;
-            console.log('init Manager');
+            // console.log('init Manager');
             //event center for manager
             for (attr in Event) {
                 self[attr] = Event[attr];
@@ -258,7 +258,7 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
             }
             var keys = getObjKeys(getInViewPortWorkers());
             var workerQueue = [];
-            console.log("InviewPort: " + keys.length);
+            // console.log("InviewPort: " + keys.length);
             var workerNeeded = Math.floor((Math.random() * (workerRange[1] - workerRange[0]) + workerRange[0]));
             var neededWorkers = sampledArr(keys, Math.min(workerNeeded, keys.length));
             var i;
@@ -284,7 +284,7 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
             self.bind('finishOneRound', function() {
                 // console.log(self);
                 self._generateWorkQueue();
-                console.log('finish a one ROund');
+                // console.log('finish a one ROund');
                 self.run();
             });
 
@@ -352,7 +352,7 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
         self.interval = 2000;
         self.run = function() {
             var self = this;
-            console.log(self.id || self.attr);
+            // console.log(self.id || self.attr);
         }
         self.work = function() {
             var self = this;
