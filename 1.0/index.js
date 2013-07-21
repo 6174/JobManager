@@ -184,6 +184,7 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
             // console.log(self);
             self._generateWorkQueue();
             var workerQueue = self.workerQueue;
+            if(workerQueue.length == 0) return;
             var i;
             var l;
             var job;
@@ -239,22 +240,40 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
         },
         _generateWorkQueue: function() {
             var self = this;
-            var workerRange = self.conf.workerRange || [2, 4];
-            var workTimeRange = self.conf.workTimeRange || [1, 3];
+            var workerRange = self.get("workerRange");// || [2, 4];
+            var workTimeRange = self.get("workTimeRange");// || [1, 3];
             var self = this;
-            var keys = getObjKeys(self.workers);
+            function getInViewPortWorkers(){
+                var inViewWorkers = {};
+                var workers = self.workers;
+                for(attr in workers) if(workers.hasOwnProperty(attr)) {
+                    var worker = workers[attr];
+                    if(!worker.isElInViewPort){
+                        inViewWorkers[attr] = "";
+                    }else if(worker.isElInViewPort()){
+                        inViewWorkers[attr] = "";
+                    }
+                }
+                return inViewWorkers;
+            }
+            var keys = getObjKeys(getInViewPortWorkers());
             var workerQueue = [];
-            var workerNeeded = Math.floor((Math.random() * workerRange[0] + (workerRange[1] - workerRange[0])));
-            var neededWorkers = sampledArr(keys, workerNeeded);
+            console.log("InviewPort: " + keys.length);
+            var workerNeeded = Math.floor((Math.random() * (workerRange[1] - workerRange[0]) + workerRange[0]));
+            var neededWorkers = sampledArr(keys, Math.min(workerNeeded, keys.length));
             var i;
-            for (i = 0; i < workerNeeded; i++) {
+            var l;
+            for (i = 0, l = neededWorkers.length; i < l; i++) {
+                var times = Math.floor(Math.random() * (workTimeRange[1] - workTimeRange[0]) + workTimeRange[0]);
                 workerQueue.push([
                     neededWorkers[i],
-                    Math.random() * workTimeRange[0] + workTimeRange[1] - workTimeRange[0],
+                    times,
                     0
                 ]);
             }
             self.workerQueue = workerQueue;
+            // console.log(self.get("workTimeRange"));
+            // console.log(workerQueue[0]);
             self.jobFinished = 0;
             // console.log(workerQueue);
             return workerQueue;
@@ -272,7 +291,7 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
             //bind finish a job
             self.bind('finishedAJob', function() {
                 self.jobFinished += 1;
-                console.log('finish a job');
+                // console.log('finish a job');
                 if (self.jobFinished == self.workerQueue.length) {
                     self.trigger('finishOneRound');
                     self
@@ -295,7 +314,7 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
                 function func() {
                     t = setTimeout(function() {
                         // console.log(self.timesToRun);
-                        console.log(job);
+                        // console.log(job);
                         if (self.timesToRun > 0) {
                             self.run();
                             self.timesToRun -= 1;
