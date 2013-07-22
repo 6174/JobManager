@@ -198,12 +198,27 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
         //run
         run: function() {
             var self = this;
+            if(self.stopped){
+                console.log("stopped");
+                return;
+            }
             var stratergy = self.conf['stratergy'] || 'random';
             self.Stratergy[stratergy]();
             return self;
         },
-        //stop
-        stop: function() {},
+        //pause
+        pause: function() {
+            var self = this;
+            if(self.stopped) return;
+            self.stopped = true;
+            return self;
+        },
+        restart: function(){
+            var self = this;
+            self.stopped = false;
+            self.run();
+            return self;
+        },
         reStore: function() {
             var self = this;
             if (self.conf.workerClass.staticDomContainers.length === 0) return;
@@ -275,7 +290,7 @@ KISSY.add('/kissy-gallery/JobManager/1.0/build/index', function(S, Node, Base) {
             // console.log(self.get("workTimeRange"));
             // console.log(workerQueue[0]);
             self.jobFinished = 0;
-            // console.log(workerQueue);
+            // console.log("workerQueue: " + workerQueue.length );
             return workerQueue;
         },
         _bindJobEvents: function() {
